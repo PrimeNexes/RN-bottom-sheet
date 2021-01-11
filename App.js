@@ -14,12 +14,9 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 const App = () => {
   return (
     <>
-    
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
-      <View style={{flex: 1, margin: 50}}>
         <BottomSheet />
-        </View>
       </SafeAreaView>
     </>
   );
