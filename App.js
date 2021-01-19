@@ -7,16 +7,31 @@
  */
 
 import React from 'react';
-import {SafeAreaView, View, StatusBar} from 'react-native';
+import {SafeAreaView, View, StatusBar, Button, Alert} from 'react-native';
 import BottomSheet from './src/BottomSheet';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   return (
     <>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView>
-        <BottomSheet />
+      <View style={{height:'100%',width:'100%',backgroundColor:'black'}}>
+          <Button title={"PRESS ME"} onPress={()=>{Alert.alert("Doing Main")}}></Button>
+        </View>
+        <BottomSheet style={{backgroundColor:'white', borderTopLeftRadius:6,borderTopRightRadius:6}} 
+        header={ <View style={{
+          marginTop:10,
+          marginBottom:14,
+          height: 4,
+          borderRadius: 4,
+          backgroundColor: '#CBCDCC88',
+          alignSelf:'center',
+          width: 36,
+        }}/>}>
+        <View style={{flexDirection:'column',backgroundColor:'grey'}}>
+          <Button title={"PRESS ME"} onPress={()=>{Alert.alert("Doing Sheet")}} />
+        </View>
+        </BottomSheet>
       </SafeAreaView>
     </>
   );

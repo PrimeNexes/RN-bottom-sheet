@@ -1,48 +1,73 @@
-import React,{windowWidth} from 'react';
-import { Animated,Dimensions  } from 'react-native';
-
+import React, { useState } from 'react';
+import {View, Text, StyleSheet, SafeAreaView, useWindowDimensions} from 'react-native';
 import {
-  PanGestureHandler,
-  ScrollView,
+  FlingGestureHandler,
+  Directions,
   State,
+  ScrollView,
 } from 'react-native-gesture-handler';
 
-function BottomSheet() {
-  const circleRadius = 30;
-  let touchX = new Animated.Value( Dimensions.get('window').width / 2 - circleRadius);
-  let onPanGestureEvent = Animated.event([{ nativeEvent: { x: touchX } }], {
-    useNativeDriver: true,
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+
+function BottomSheet(props) {
+  
+  const offset = useSharedValue(0);
+  const defaultHeight = props.defaultHeight || 20 ;
+  const height = props.height || (useWindowDimensions().height/2);
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      height: withSpring( offset.value + defaultHeight ),
+    };
   });
-    return (
-      <PanGestureHandler onGestureEvent={onPanGestureEvent}>
-        <Animated.View
-          style={{
-            height: 150,
-            justifyContent: 'center',
-          }}>
-          <Animated.View
-            style={[
-              {
-                backgroundColor: '#42a5f5',
-                borderRadius: circleRadius,
-                height: circleRadius * 2,
-                width: circleRadius * 2,
-              },
-              {
-                transform: [
-                  {
-                    translateX: Animated.add(
-                      touchX,
-                      new Animated.Value(-circleRadius)
-                    ),
-                  },
-                ],
-              },
-            ]}
-          />
+
+  return (
+    <View style={styles.container}>
+      <FlingGestureHandler
+        direction={Directions.UP}
+        onHandlerStateChange={({nativeEvent}) => {
+          if (nativeEvent.state === State.ACTIVE && (offset.value !== height)) {
+            offset.value = offset.value + height;
+          }
+        }}>
+          <FlingGestureHandler
+        direction={ Directions.DOWN}
+        onHandlerStateChange={({nativeEvent}) => {
+          if (nativeEvent.state === State.ACTIVE && (offset.value === height)) {
+            offset.value = offset.value - height;
+          }
+        }}>
+        <Animated.View style={[styles.modalBox,animatedStyles,props.style]}>
+            {props.header}
+          <ScrollView style={styles.content}>
+            {props.children}
+          </ScrollView>
         </Animated.View>
-      </PanGestureHandler>
-    );
+        </FlingGestureHandler>
+      </FlingGestureHandler>
+      </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalBox: {
+    width:'100%',
+  },
+  content :
+  {
+    top:25,
+    height:'100%',
+    width:'100%',
+    position:'absolute',
+  }
+})
+
 
 export default BottomSheet;
